@@ -3,14 +3,8 @@
 байтовом типе.
 """
 
+var_list = ['attribute', 'класс', 'функция', 'type']
 
-var1 = b'attribute'
-var2 = b'класс'
-var3 = b'функция'
-var4 = b'type' 
-
-"""
-    var2 = b'класс', var3 = b'функция'
-                        ^
-SyntaxError: bytes can only contain ASCII literal characters.
-"""
+for var in var_list:
+    b = bytes(var, encoding="utf8")  # без encoding="utf8" кириллица не работает
+    print(b)

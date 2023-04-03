@@ -4,23 +4,12 @@
 Принудительно открыть файл в формате Unicode и вывести его содержимое.
 """
 
-import locale
- 
-resurs_string = ['сетевое программирование', 'сокет', 'декоратор']
- 
+import chardet
 
-with open('resurs.txt', 'w+') as f:
-    for i in resurs_string:
-        f.write(i + '\n')
-    f.seek(0)
+with open('resurse1.txt', 'rb') as f:
+    for line in f:
+        e = chardet.detect(line)
+        coding = e['encoding']
+        line = line.decode(coding).encode('utf-8')
+        print(line.decode('utf-8'))
  
-print(f)
- 
-file_coding = locale.getpreferredencoding()
- 
-
-with open('resurs.txt', 'r', encoding=file_coding) as f:
-    for i in f:
-        print(i)
- 
-    f.seek(0)
