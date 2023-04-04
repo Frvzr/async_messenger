@@ -1,0 +1,9 @@
+dict:
+  Copyright: ©
+  Dollar: $
+  Euro: €
+int: 555
+list:
+- 3
+- 2
+- 1
