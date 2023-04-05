@@ -1,2 +1,2 @@
-# gb_async_chat
-Geekbrains course async chat
+# Асинхронный чат
+### Урок 1. Концепции хранения информации
