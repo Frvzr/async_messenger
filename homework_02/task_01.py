@@ -51,12 +51,12 @@ def get_data():
 
 def write_to_csv(file_link):
     data = get_data()
-    with open(file_link, 'w') as f:
+    with open(file_link, 'w', encoding='utf-8') as f:
         f_writer = csv.writer(f)
         for row in data:
             f_writer.writerow(row)
 
-    with open('task_1.csv') as f_n:
+    with open('task_1.csv', encoding='utf-8') as f_n:
         print(f_n.read())
 
 if __name__ == '__main__':
