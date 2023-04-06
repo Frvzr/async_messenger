@@ -1,0 +1,18 @@
+{
+    "orders": [
+        {
+            "buyer": "Ivan",
+            "date": "20-02-2023",
+            "item": "Table",
+            "price": 145,
+            "quantity": 1
+        },
+        {
+            "buyer": "Ivan",
+            "date": "21-02-2023",
+            "item": "Chairs",
+            "price": 50,
+            "quantity": 4
+        }
+    ]
+}
