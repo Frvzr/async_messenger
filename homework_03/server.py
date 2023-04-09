@@ -4,12 +4,12 @@ import argparse
 from datetime import datetime
 
 
-
 def create_parser():
     parser = argparse.ArgumentParser(description='Start server')
     parser.add_argument ('-a', '--addr', default='', help='Server ip address, default localhost')
     parser.add_argument ('-p', '--port', default=7777, help='TCP - port on the server, default 7777')
     return parser
+
 
 def response_msg(data):
     if data['action'] == 'authenticate':
@@ -37,7 +37,6 @@ def response_msg(data):
                 "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
                 "alert": "Вы написали сообщение"
                 }
-
     else:
         msg = {
             "action": "probe",
@@ -45,9 +44,11 @@ def response_msg(data):
             }
         
     return msg
-                
+
+
 def send_message(socket, msg, address):
     return socket.sendto(str(msg).encode('utf-8'), address)
+
 
 def main(port, addr):
     s = socket(AF_INET, SOCK_DGRAM) 
@@ -58,20 +59,9 @@ def main(port, addr):
         data, address = s.recvfrom(1024)
         print(data.decode('utf-8'))
         data = eval(data)
-        if data['action'] == 'quit':
-             s.close()
-             break
-        if 'message' in data:
-            if data['message'] == "quit":
-                s.close()
-                break
-            else:
-                msg = response_msg(data)
-                send_message(s, msg, address)  
-        else:
-            msg = response_msg(data)
-            send_message(s, msg, address)
-
+        msg = response_msg(data)
+        send_message(s, msg, address) 
+        
 
 if __name__ == "__main__":
     try:

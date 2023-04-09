@@ -51,10 +51,6 @@ def response_msg(data):
                     "encoding": "ascii",
                     "message": message
                     }
-    else:
-         msg = {
-                "action": "quit"
-                }
     return msg
 
 def send_message(socket, server, msg):
@@ -71,8 +67,7 @@ def main(port, addr):
         print(data.decode('utf-8'))
         data = eval(data)
         msg = response_msg(data)
-        if 'message' in msg and msg['message'] == "quit":
-            send_message(s, server, msg)
+        if ('message' in msg and msg['message'] == "quit") or msg['action'] == 'quit':
             s.close()
             break
         else:
