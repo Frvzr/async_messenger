@@ -8,8 +8,6 @@ class TestServer(unittest.TestCase):
         parser = create_parser()
         parsed = parser.parse_args()
         port = parsed.port
-        addr = parsed.addr
-        self.assertEqual(addr, '')
         self.assertEqual(port, 7777)
     
     def test_parser_default_addr(self):
