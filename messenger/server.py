@@ -66,7 +66,6 @@ def send_message(socket, msg, address):
 def main(port, addr):
     try:
         logger.info("Start server")
-        logger.warning("Test message")
         
         s = socket(AF_INET, SOCK_DGRAM) 
         s.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) 

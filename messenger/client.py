@@ -34,6 +34,7 @@ def response_msg(data):
     try:
         if 'response' in data:
             if data['response'] == 200:
+                logger.info(f"Authentication was successful")
                 msg = {
                     "action": "join",
                     "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
@@ -73,13 +74,17 @@ def send_message(socket, server, msg):
 
 def main(port, addr):
     try:
+        logger.info(f"Connect to server {addr}")
+
         s = socket(AF_INET, SOCK_DGRAM)
         s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
         server = (addr, int(port))
+        logger.info(f"Connection to {addr} was successful")
         data = authenticate()
         send_message(s, server, data)
         while True:
             data, server = s.recvfrom(1024)
+            logger.info(f"Message send was successful")
             print(data.decode('utf-8'))
             data = eval(data)
             msg = response_msg(data)
