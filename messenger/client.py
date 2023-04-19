@@ -3,9 +3,12 @@ import sys
 import argparse
 from datetime import datetime
 from log import client_log_config
+from wrapper_log import log 
+
 
 logger = client_log_config.get_logger(__name__)
 
+@log
 def create_parser():
     try:
         parser = argparse.ArgumentParser()
@@ -15,6 +18,7 @@ def create_parser():
     except Exception as e:
         logger.critical(e)
 
+@log
 def authenticate():
     try:
         msg = {
@@ -29,7 +33,7 @@ def authenticate():
     except Exception as e:
         logger.error(e)
 
-
+@log
 def response_msg(data):
     try:
         if 'response' in data:
@@ -66,6 +70,7 @@ def response_msg(data):
     except Exception as e:
         logger.error(e)
 
+@log
 def send_message(socket, server, msg):
     try:
         return socket.sendto(str(msg).encode('utf-8'), server)
