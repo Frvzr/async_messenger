@@ -5,6 +5,7 @@ from datetime import datetime
 import sys
 sys.path.append("..")
 from client import create_parser, response_msg
+from wrapper_log import log
 
 
 class TestServer(unittest.TestCase):
