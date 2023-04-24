@@ -3,11 +3,12 @@ import sys
 import argparse
 from datetime import datetime
 from log import server_log_config
-
+from wrapper_server_log import log
 
 logger = server_log_config.get_logger(__name__)
 
 
+@log
 def create_parser():
     try:
         parser = argparse.ArgumentParser(description='Start server')
@@ -18,6 +19,7 @@ def create_parser():
         logger.critical(e)
 
 
+@log
 def response_msg(data):
     try:
         if data['action'] == 'authenticate':
@@ -56,11 +58,13 @@ def response_msg(data):
         logger.error(e)
 
 
+@log
 def send_message(socket, msg, address):
     try:
         return socket.sendto(str(msg).encode('utf-8'), address)
     except Exception as e:
         logger.error(e)
+
 
 
 def main(port, addr):

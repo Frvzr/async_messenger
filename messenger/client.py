@@ -3,7 +3,7 @@ import sys
 import argparse
 from datetime import datetime
 from log import client_log_config
-from wrapper_log import log 
+from wrapper_client_log import log 
 
 
 logger = client_log_config.get_logger(__name__)
