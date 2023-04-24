@@ -4,9 +4,11 @@ from wrapper_server_log import log
 from log import server_log_config
 import argparse
 import sys
+from datetime import datetime
 
 
 logger = server_log_config.get_logger(__name__)
+
 
 @log
 def create_parser():
@@ -21,10 +23,11 @@ def create_parser():
 
 @log
 def read_requests(r_clients, all_clients):
-    responses = {} # Словарь ответов сервера вида {сокет: запрос}
+    responses = {} 
     for sock in r_clients:
         try:
             data = sock.recv(1024).decode('utf-8')
+            #data = eval(data)
             responses[sock] = data
         except:
             logger.info('Клиент {} {} отключился'.format(sock.fileno(), sock.getpeername()))
@@ -32,14 +35,54 @@ def read_requests(r_clients, all_clients):
         return responses
     
 @log
+def response_msg(data):
+    try:
+        if data['action'] == 'authenticate':
+            if data['user']['account_name'] and data['user']['password']:
+                msg = {
+                    "response": 200,
+                    "alert":"Все ок"
+                    }
+            else:
+                msg = {
+                    "response": 402,
+                    "error": 'This could be "wrong password" or "no account with that name"'
+                    }
+        elif data['action'] == "join":
+                msg = {
+            "action": "msg",
+            "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+            "room": "#room_name",
+            "message": "Вы подключились к чату"
+            }
+
+        elif data['action'] == "msg":
+            msg = { 
+                    "action": "msg",
+                    "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+                    "message": "Вы написали сообщение"
+                    }
+        else:
+            msg = {
+                "action": "probe",
+                "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
+                }
+            
+        return msg
+    except Exception as e:
+        logger.error(e)
+    
+@log
 def write_responses(requests, w_clients, all_clients):
     for sock in w_clients:
         if sock in requests:
             try:
-                resp = requests[sock].encode('utf-8')
-                logger.info(f'Клиент прислал сообщение {resp}')
-                answer = resp.upper()
-                sock.send(answer)
+                print(requests)
+                for k, v in requests.items():
+                    resp = v
+                answer = resp
+                print(answer)
+                sock.send(str(answer).encode('utf-8'))
                 logger.info(f'Клиенту отправлено сообщение {answer}')
             except: 
                 logger.info('Клиент {} {} отключился'.format(sock.fileno(),
@@ -78,10 +121,14 @@ def main(port, addr):
             except OSError:
                 pass 
             if r:
-                for client_msgin in r:
-                    requests = read_requests(r, clients)
-                    if requests:
-                        write_responses(requests, w, clients) 
+                requests = read_requests(r, clients)
+                if requests:
+                    for k, v in requests.items():
+                        #print(v)
+                        v = eval(v)
+                        req = response_msg(v)
+                        requests[k] = req       
+                    write_responses(requests, w, clients) 
                         
 
 if __name__ == "__main__":
