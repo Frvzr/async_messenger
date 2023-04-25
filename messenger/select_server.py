@@ -27,7 +27,6 @@ def read_requests(r_clients, all_clients):
     for sock in r_clients:
         try:
             data = sock.recv(1024).decode('utf-8')
-            #data = eval(data)
             responses[sock] = data
         except:
             logger.info('Клиент {} {} отключился'.format(sock.fileno(), sock.getpeername()))
@@ -60,7 +59,7 @@ def response_msg(data):
             msg = { 
                     "action": "msg",
                     "time": datetime.now().strftime('%d.%m.%Y %H:%M:%S'),
-                    "message": "Вы написали сообщение"
+                    "message": data['message']
                     }
         else:
             msg = {
@@ -74,14 +73,11 @@ def response_msg(data):
     
 @log
 def write_responses(requests, w_clients, all_clients):
+    print(requests)
     for sock in w_clients:
         if sock in requests:
             try:
-                print(requests)
-                for k, v in requests.items():
-                    resp = v
-                answer = resp
-                print(answer)
+                answer = requests[sock]
                 sock.send(str(answer).encode('utf-8'))
                 logger.info(f'Клиенту отправлено сообщение {answer}')
             except: 
@@ -102,7 +98,8 @@ def main(port, addr):
     s = socket(AF_INET, SOCK_STREAM)
     s.bind(address)
     s.listen(5)
-    s.settimeout(0.2) 
+    s.settimeout(0.2)
+    s.setblocking(False)
     while True:
         try:
             conn, addr = s.accept() 
@@ -112,7 +109,7 @@ def main(port, addr):
             logger.info("Получен запрос на соединение от %s" % str(addr))
             clients.append(conn)
         finally:
-            wait = 10
+            wait = 0
             r = []
             w = []
             try:
@@ -122,12 +119,7 @@ def main(port, addr):
                 pass 
             if r:
                 requests = read_requests(r, clients)
-                if requests:
-                    for k, v in requests.items():
-                        #print(v)
-                        v = eval(v)
-                        req = response_msg(v)
-                        requests[k] = req       
+                if requests: 
                     write_responses(requests, w, clients) 
                         
 

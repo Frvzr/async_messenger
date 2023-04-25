@@ -47,7 +47,9 @@ def main(port, addr):
                 break
             sock.send(str(msg).encode('utf-8')) 
             data = sock.recv(1024).decode('utf-8')
-            print('Ответ:', data)
+            data = eval(data)
+            answer = data['message']
+            print('Ответ:', answer)
 
 
 if __name__ == "__main__":
