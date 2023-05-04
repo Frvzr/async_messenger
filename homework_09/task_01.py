@@ -20,6 +20,7 @@ def get_ip(host):
         return host
 
 def host_ping(host):
+    
     ip = get_ip(host)
     system = '-n' if platform.system().lower()=='windows' else '-c'
     command = ['ping', system, '1', str(ip)]
@@ -30,7 +31,7 @@ def host_ping(host):
         print(f'Узел {host} недоступен или не существует')
 
 
-hosts = ['google.com', 'yandex.ru', 'gb.ru', "gbbbbr.ru"]
+hosts = ['google.com', 'yandex.ru', 'gb.ru', "gbbbbr.ru", '192.168.0.100']
 
 if __name__ == "__main__":
     for host in hosts:

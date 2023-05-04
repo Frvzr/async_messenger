@@ -13,7 +13,7 @@ def valid_range(first, second):
 
 
 def host_range_ping(ip):
-    
+    ip = ipaddress.ip_address(ip)
     system = '-n' if platform.system().lower()=='windows' else '-c'
     command = ['ping', system, '1', str(ip)]
     
