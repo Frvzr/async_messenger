@@ -8,6 +8,7 @@ except ImportError:
 
 from sqlalchemy import create_engine, Table, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import registry, sessionmaker
+from vars import *
 import datetime
 
 
@@ -17,8 +18,8 @@ class ServerDatabase:
             self.name = username
             self.last_login = datetime.datetime.now()
             self.id = None
-            
-            
+
+
     class ActiveUsers:
         def __init__(self, user_id, ip_address, port, login_time):
             self.user = user_id
@@ -51,8 +52,7 @@ class ServerDatabase:
             self.sent = 0
             self.accepted = 0
 
-    def __init__(self, path ):
-        print(path)
+    def __init__(self , path):
         self.database_engine = create_engine(f'sqlite:///{path}', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
 
@@ -63,7 +63,7 @@ class ServerDatabase:
                             Column('name', String, unique=True),
                             Column('last_login', DateTime)
                             )
-        
+
         active_users_table = Table('Active_users', self.mapper_registry.metadata,
                                    Column('id', Integer, primary_key=True),
                                    Column('user', ForeignKey('Users.id'), unique=True),
@@ -95,7 +95,6 @@ class ServerDatabase:
 
         self.mapper_registry.metadata.create_all(self.database_engine)
 
-
         self.mapper_registry.map_imperatively(self.AllUsers, users_table)
         self.mapper_registry.map_imperatively(self.ActiveUsers, active_users_table)
         self.mapper_registry.map_imperatively(self.LoginHistory, user_login_history)
@@ -126,14 +125,15 @@ class ServerDatabase:
 
         history = self.LoginHistory(user.id, datetime.datetime.now(), ip_address, port)
         self.session.add(history)
+
         self.session.commit()
 
     def user_logout(self, username):
         user = self.session.query(self.AllUsers).filter_by(name=username).first()
+
         self.session.query(self.ActiveUsers).filter_by(user=user.id).delete()
 
         self.session.commit()
-
 
     def process_message(self, sender, recipient):
         sender = self.session.query(self.AllUsers).filter_by(name=sender).first().id
@@ -156,7 +156,6 @@ class ServerDatabase:
         self.session.add(contact_row)
         self.session.commit()
 
-    # Функция удаляет контакт из базы данных
     def remove_contact(self, user, contact):
         user = self.session.query(self.AllUsers).filter_by(name=user).first()
         contact = self.session.query(self.AllUsers).filter_by(name=contact).first()
@@ -164,10 +163,10 @@ class ServerDatabase:
         if not contact:
             return
 
-        print(self.session.query(self.UsersContacts).filter(
+        self.session.query(self.UsersContacts).filter(
             self.UsersContacts.user == user.id,
             self.UsersContacts.contact == contact.id
-        ).delete())
+        ).delete()
         self.session.commit()
 
     def users_list(self):
@@ -175,9 +174,7 @@ class ServerDatabase:
             self.AllUsers.name,
             self.AllUsers.last_login
         )
-
         return query.all()
-
 
     def active_users_list(self):
         query = self.session.query(
@@ -197,6 +194,7 @@ class ServerDatabase:
 
         if username:
             query = query.filter(self.AllUsers.name == username)
+
         return query.all()
 
     def get_contacts(self, username):
@@ -206,9 +204,7 @@ class ServerDatabase:
             filter_by(user=user.id). \
             join(self.AllUsers, self.UsersContacts.contact == self.AllUsers.id)
 
-
         return [contact[1] for contact in query.all()]
-
 
     def message_history(self):
         query = self.session.query(
