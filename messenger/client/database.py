@@ -64,6 +64,10 @@ class ClientDatabase:
         self.session.query(self.Contacts).delete()
         self.session.commit()
 
+    def contacts_clear(self):
+        '''Метод очищающий таблицу со списком контактов.'''
+        self.session.query(self.Contacts).delete()
+    
     def add_contact(self, contact):
         if not self.session.query(self.Contacts).filter_by(name=contact).count():
             contact_row = self.Contacts(contact)
