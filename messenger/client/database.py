@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine, Table, Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import registry, sessionmaker
 import datetime
+import os
+import sys
+sys.path.append('../')
 
 
 class ClientDatabase:
@@ -10,10 +13,10 @@ class ClientDatabase:
             self.username = user
 
     class MessageHistory:
-        def __init__(self, from_user, to_user, message):
+        def __init__(self, contact, direction, message):
             self.id = None
-            self.from_user = from_user
-            self.to_user = to_user
+            self.contact = contact
+            self.direction = direction
             self.message = message
             self.date = datetime.datetime.now()
 
@@ -23,26 +26,25 @@ class ClientDatabase:
             self.name = contact
 
     def __init__(self, name):
-        self.database_engine = create_engine(f'sqlite:///client_{name}.db3', echo=False, pool_recycle=7200,
+        path = os.path.dirname(os.path.realpath(__file__))
+        db_name = f'client_{name}.db3'
+        self.database_engine = create_engine(f'sqlite:///{os.path.join(path, db_name)}', echo=False, pool_recycle=7200,
                                              connect_args={'check_same_thread': False})
 
         self.mapper_registry = registry()
-
 
         users = Table('known_users', self.mapper_registry.metadata,
                       Column('id', Integer, primary_key=True),
                       Column('username', String)
                       )
 
-
         history = Table('message_history', self.mapper_registry.metadata,
                         Column('id', Integer, primary_key=True),
-                        Column('from_user', String),
-                        Column('to_user', String),
+                        Column('contact', String),
+                        Column('direction', String),
                         Column('message', Text),
                         Column('date', DateTime)
                         )
-
 
         contacts = Table('contacts', self.mapper_registry.metadata,
                          Column('id', Integer, primary_key=True),
@@ -50,7 +52,6 @@ class ClientDatabase:
                          )
 
         self.mapper_registry.metadata.create_all(self.database_engine)
-
 
         self.mapper_registry.map_imperatively(self.KnownUsers, users)
         self.mapper_registry.map_imperatively(self.MessageHistory, history)
@@ -79,8 +80,8 @@ class ClientDatabase:
             self.session.add(user_row)
         self.session.commit()
 
-    def save_message(self, from_user, to_user, message):
-        message_row = self.MessageHistory(from_user, to_user, message)
+    def save_message(self, contact, direction, message):
+        message_row = self.MessageHistory(contact, direction, message)
         self.session.add(message_row)
         self.session.commit()
 
@@ -102,13 +103,9 @@ class ClientDatabase:
         else:
             return False
 
-    def get_history(self, from_who=None, to_who=None):
-        query = self.session.query(self.MessageHistory)
-        if from_who:
-            query = query.filter_by(from_user=from_who)
-        if to_who:
-            query = query.filter_by(to_user=to_who)
-        return [(history_row.from_user, history_row.to_user, history_row.message, history_row.date)
+    def get_history(self, contact):
+        query = self.session.query(self.MessageHistory).filter_by(contact=contact)
+        return [(history_row.contact, history_row.direction, history_row.message, history_row.date)
                 for history_row in query.all()]
 
 
