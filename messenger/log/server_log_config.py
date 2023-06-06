@@ -1,24 +1,33 @@
+import sys
+sys.path.append('../')
 import logging
+import logging.handlers
+import os
+from common.vars import LOGGING_LEVEL
 
-_log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+# создаём формировщик логов (formatter):
+server_formatter = logging.Formatter('%(asctime)s %(levelname)s %(filename)s %(message)s')
 
-def get_file_handler():
-    file_handler = logging.FileHandler("server.log", encoding='utf-8')
-    file_handler.setLevel(logging.WARNING)
-    file_handler.setFormatter(logging.Formatter(_log_format))
-    return file_handler
+# Подготовка имени файла для логирования
+path = os.path.dirname(os.path.abspath(__file__))
+path = os.path.join(path, 'server.log')
 
-def get_stream_handler():
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    stream_handler.setFormatter(logging.Formatter(_log_format))
-    return stream_handler
+# создаём потоки вывода логов
+steam = logging.StreamHandler(sys.stderr)
+steam.setFormatter(server_formatter)
+steam.setLevel(logging.INFO)
+log_file = logging.handlers.TimedRotatingFileHandler(path, encoding='utf8', interval=1, when='D')
+log_file.setFormatter(server_formatter)
 
-def get_logger(name):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(get_file_handler())
-    logger.addHandler(get_stream_handler())
-    return logger
+# создаём регистратор и настраиваем его
+logger = logging.getLogger('server')
+logger.addHandler(steam)
+logger.addHandler(log_file)
+logger.setLevel(LOGGING_LEVEL)
 
-
+# отладка
+if __name__ == '__main__':
+    logger.critical('Test critical event')
+    logger.error('Test error ivent')
+    logger.debug('Test debug ivent')
+    logger.info('Test info ivent')
