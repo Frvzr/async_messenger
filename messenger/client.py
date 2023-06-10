@@ -6,7 +6,7 @@ import os
 from Cryptodome.PublicKey import RSA
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
-from common.vars import *
+from common.vars import DEFAULT_PORT, DEFAULT_IP_ADDRESS
 from common.errors import ServerError
 from common.decos import log
 from client.database import ClientDatabase
@@ -40,7 +40,9 @@ def arg_parser():
     # проверим подходящий номер порта
     if not 1023 < server_port < 65536:
         logger.critical(
-            f'Попытка запуска клиента с неподходящим номером порта: {server_port}. Допустимы адреса с 1024 до 65535. Клиент завершается.')
+            f'Попытка запуска клиента с неподходящим номером порта: '
+            f'{server_port} Допустимы адреса с 1024 до 65535. Клиент '
+            f'завершается.')
         exit(1)
 
     return server_address, server_port, client_name, client_passwd
@@ -64,13 +66,15 @@ if __name__ == '__main__':
         if start_dialog.ok_pressed:
             client_name = start_dialog.client_name.text()
             client_passwd = start_dialog.client_passwd.text()
-            logger.debug(f'Using USERNAME = {client_name}, PASSWD = {client_passwd}.')
+            logger.debug(f'Using USERNAME = {client_name}, '
+                         f'PASSWD = {client_passwd}.')
         else:
             exit(0)
 
     # Записываем логи
     logger.info(
-        f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port}, имя пользователя: {client_name}')
+        f'Запущен клиент с парамертами: адрес сервера: {server_address}, '
+        f'порт: {server_port}, имя пользователя: {client_name}')
 
     # Загружаем ключи с файла, если же файла нет, то генерируем новую пару.
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -82,8 +86,7 @@ if __name__ == '__main__':
     else:
         with open(key_file, 'rb') as key:
             keys = RSA.import_key(key.read())
-
-    #!!!keys.publickey().export_key()
+    # !!!keys.publickey().export_key()
     logger.debug("Keys sucsessfully loaded.")
     # Создаём объект базы данных
     database = ClientDatabase(client_name)
