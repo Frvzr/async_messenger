@@ -11,8 +11,8 @@ import hmac
 import binascii
 
 from common.errors import ServerError
-from common.vars import *
-from common.utils import *
+from common.vars import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, PUBLIC_KEY, RESPONSE, ERROR, RESPONSE_511, DATA, DESTINATION, MESSAGE, SENDER, MESSAGE_TEXT, LIST_INFO, USERS_REQUEST, PUBLIC_KEY_REQUEST, GET_CONTACTS, ADD_CONTACT, REMOVE_CONTACT, EXIT
+from common.utils import send_message, get_message
 
 from PyQt5.QtCore import pyqtSignal, QObject
 

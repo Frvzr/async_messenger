@@ -11,6 +11,7 @@ from server.database import ServerStorage
 from server.main_window import MainWindow
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
+from common.vars import DEFAULT_PORT
 
 # Инициализация логирования сервера.
 logger = logging.getLogger('server')
