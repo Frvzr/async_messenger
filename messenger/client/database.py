@@ -49,9 +49,8 @@ class ClientDatabase:
         path = os.path.dirname(os.path.realpath(__file__))
         db_name = f'client_{name}.db3'
         self.database_engine = create_engine(
-            f'sqlite:///{os.path.join(path, db_name)}', echo=False, 
+            f'sqlite:///{os.path.join(path, db_name)}', echo=False,
             pool_recycle=7200, connect_args={'check_same_thread': False})
-        
         self.mapper_registry = registry()
 
         # Создаём таблицу известных пользователей
@@ -59,7 +58,6 @@ class ClientDatabase:
                       Column('id', Integer, primary_key=True),
                       Column('username', String)
                       )
-        
         # Создаём таблицу истории сообщений
         history = Table('message_history', self.mapper_registry.metadata,
                         Column('id', Integer, primary_key=True),
@@ -68,7 +66,7 @@ class ClientDatabase:
                         Column('message', Text),
                         Column('date', DateTime)
                         )
-
+                
         # Создаём таблицу контактов
         contacts = Table('contacts', self.mapper_registry.metadata,
                          Column('id', Integer, primary_key=True),
@@ -98,8 +96,8 @@ class ClientDatabase:
 
     def add_contact(self, contact):
         '''Метод добавляющий контакт в базу данных.'''
-        if not self.session.query(self.Contacts)\
-            .filter_by(name=contact).count():
+        if not self.session.query(self.Contacts) \
+        .filter_by(name=contact).count():
             contact_row = self.Contacts(contact)
             self.session.add(contact_row)
             self.session.commit()
@@ -124,17 +122,16 @@ class ClientDatabase:
 
     def get_contacts(self):
         '''Метод возвращающий список всех контактов.'''
-        return [contact[0] for contact in self.session\
-            .query(self.Contacts.name).all()]
+        return [contact[0] for contact in self.session.query(self.Contacts.name).all()]
 
     def get_users(self):
         '''Метод возвращающий список всех известных пользователей.'''
-        return [user[0] for user in self.session\
+        return [user[0] for user in self.session \
             .query(self.KnownUsers.username).all()]
 
     def check_user(self, user):
         '''Метод проверяющий существует ли пользователь.'''
-        if self.session.query(self.KnownUsers)\
+        if self.session.query(self.KnownUsers) \
             .filter_by(username=user).count():
             return True
         else:
@@ -150,10 +147,11 @@ class ClientDatabase:
     def get_history(self, contact):
         '''Метод возвращающий историю сообщений с определённым пользователем.'''
         query = self.session.query(self.MessageHistory) \
-         .filter_by(contact=contact)
+                .filter_by(contact=contact)
         return [(history_row.contact, history_row.direction,
                  history_row.message, history_row.date)
                 for history_row in query.all()]
+
 
 # отладка
 if __name__ == '__main__':
