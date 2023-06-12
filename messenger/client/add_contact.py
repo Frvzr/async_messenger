@@ -1,14 +1,18 @@
-import sys
-import logging
-
-sys.path.append('../')
-from PyQt5.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QLabel, QComboBox, QPushButton
+import logging
+import sys
+sys.path.append('../')
 
 logger = logging.getLogger('client')
 
 
 class AddContactDialog(QDialog):
+    '''
+    Диалог добавления пользователя в список контактов.
+    Предлагает пользователю список возможных контактов и
+    добавляет выбранный в контакты.
+    '''
     def __init__(self, transport, database):
         super().__init__()
         self.transport = transport
@@ -40,17 +44,32 @@ class AddContactDialog(QDialog):
         self.btn_cancel.move(230, 60)
         self.btn_cancel.clicked.connect(self.close)
 
+        # Заполняем список возможных контактов
         self.possible_contacts_update()
+        # Назначаем действие на кнопку обновить
         self.btn_refresh.clicked.connect(self.update_possible_contacts)
 
     def possible_contacts_update(self):
+        '''
+        Метод заполнения списка возможных контактов.
+        Создаёт список всех зарегистрированных пользователей
+        за исключением уже добавленных в контакты и самого себя.
+        '''
         self.selector.clear()
+        # множества всех контактов и контактов клиента
         contacts_list = set(self.database.get_contacts())
         users_list = set(self.database.get_users())
+        # Удалим сами себя из списка пользователей, чтобы нельзя было добавить
+        # самого себя
         users_list.remove(self.transport.username)
+        # Добавляем список возможных контактов
         self.selector.addItems(users_list - contacts_list)
 
     def update_possible_contacts(self):
+        '''
+        Метод обновления списка возможных контактов. Запрашивает с сервера
+        список известных пользователей и обносляет содержимое окна.
+        '''
         try:
             self.transport.user_list_update()
         except OSError:

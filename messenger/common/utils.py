@@ -2,7 +2,7 @@ import json
 import sys
 
 sys.path.append('../')
-from common.vars import *
+from common.vars import ENCODING, MAX_PACKAGE_LENGTH
 from common.decos import log
 
 @log

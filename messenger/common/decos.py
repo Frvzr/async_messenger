@@ -6,9 +6,12 @@ import sys
 
 sys.path.append('../')
 
+# метод определения модуля, источника запуска.
 if sys.argv[0].find('client') == -1:
+    # если не клиент то сервер!
     logger = logging.getLogger('server')
 else:
+    # иначе сервер
     logger = logging.getLogger('client')
 
 

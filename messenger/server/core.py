@@ -17,9 +17,15 @@ logger = logging.getLogger('server')
 
 
 class MessageProcessor(threading.Thread):
+    '''
+    Основной класс сервера. Принимает содинения, словари - пакеты
+    от клиентов, обрабатывает поступающие сообщения.
+    Работает в качестве отдельного потока.
+    '''
     port = Port()
 
     def __init__(self, listen_address, listen_port, database):
+        # Параментры подключения
         self.addr = listen_address
         self.port = listen_port
 
